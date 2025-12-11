@@ -63,7 +63,25 @@ const createChatCompletion = ({
   };
   return client.post('/v1/chat/completions', body);
 };
+//新增
+const createAssistantResponse = async ({
+  input,
+}) => {
+  const body = {
+    assistant_id: config.OPENAI_ASSISTANT_ID,
+    input,
+  };
 
+  const { data } = await client.post('/v1/responses', body);
+
+  const outputs = data.output ?? data.outputs ?? data.response?.output ?? [];
+  const firstOutput = outputs[0];
+  const firstContent = firstOutput?.content?.[0];
+  const text = firstContent?.text?.value ?? '';
+
+  return text;
+};
+//新增
 const createImage = ({
   model = config.OPENAI_IMAGE_GENERATION_MODEL,
   prompt,
@@ -98,8 +116,15 @@ const createAudioTranscriptions = ({
   });
 };
 
+/*export {
+  createAudioTranscriptions,
+  createChatCompletion,
+  createImage,
+};
+*/
 export {
   createAudioTranscriptions,
   createChatCompletion,
   createImage,
+  createAssistantResponse,
 };
