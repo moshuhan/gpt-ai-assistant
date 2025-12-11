@@ -1,6 +1,6 @@
 import config from '../config/index.js';
 import { MOCK_TEXT_OK } from '../constants/mock.js';
-import { createChatCompletion, FINISH_REASON_STOP } from '../services/openai.js';
+import { createAssistantResponse, FINISH_REASON_STOP } from '../services/openai.js'; //有修改
 
 class Completion {
   text;
@@ -25,7 +25,8 @@ class Completion {
  * @param {Prompt} param.prompt
  * @returns {Promise<Completion>}
  */
-const generateCompletion = async ({
+
+/*const generateCompletion = async ({
   prompt,
 }) => {
   if (config.APP_ENV !== 'production') return new Completion({ text: MOCK_TEXT_OK });
@@ -36,5 +37,26 @@ const generateCompletion = async ({
     finishReason: choice.finish_reason,
   });
 };
+*/
+const generateCompletion = async ({
+  prompt,
+}) => {
+  if (config.APP_ENV !== 'production') {
+    return new Completion({ text: MOCK_TEXT_OK });
+  }
+
+  // 這裡先直接把整個 messages 丟給 assistant
+  const input = prompt.messages;
+
+  const text = await createAssistantResponse({ input });
+
+  return new Completion({
+    text: text.trim(),
+    finishReason: FINISH_REASON_STOP, // 自己給個固定的結束理由
+  });
+};
+
+export default generateCompletion;
+
 
 export default generateCompletion;
